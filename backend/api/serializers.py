@@ -15,3 +15,13 @@ class MovieSerializer(serializers.ModelSerializer):
         instance.active= validated_data.get('active', instance.active)
         instance.save()
         return instance
+    
+    def validate_name(self, value):
+        
+        if len(value) > 2:
+            raise serializers.ValidationError("Name is too short")
+        
+        if Movie.objects.filter(name=value).exists():
+            raise serializers.ValidationError("Name already exists")
+        
+        return value
