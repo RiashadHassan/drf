@@ -1,56 +1,51 @@
 from rest_framework import serializers
-from .models import Movie
+from .models import WatchList, StreamPlatform
 
-class MovieSerializer(serializers.ModelSerializer):
+class StreamPlatfromSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Movie
-        fields = ('__all__')
-    
-    def create(self, validated_data):
-        return Movie.objects.create(**validated_data)
+        model = StreamPlatform
+        fields = '__all__'
+        
 
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get('name', instance.name)
-        instance.description = validated_data.get('description', instance.description)
-        instance.active= validated_data.get('active', instance.active)
-        instance.save()
-        return instance
+class WatchListSerializer(serializers.ModelSerializer):
     
-    # def validate_name(self, value):
-        
-    #     if len(value) < 2:
-    #         raise serializers.ValidationError("Name is too short")
-        
-    #     if Movie.objects.filter(name=value).exists():
-    #         raise serializers.ValidationError("Name already exists")
-        
-    #     return value
-    # def validate_description(self, value):
-        
-    #     if len(value) < 10:
-    #         raise serializers.ValidationError("Description is too short")
-        
-    #     if Movie.objects.filter(description=value).exists():
-    #         raise serializers.ValidationError("Description already exists")
-        
-    #     return value
+    name_length = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = WatchList
+        fields = ('__all__')
+        # exclude=['name']
+    
+    def get_name_length(self, obj):
+        return len(obj.name)    
+    # def create(self, validated_data):
+    #     return WatchList.objects.create(**validated_data)
+
+    # def update(self, instance, validated_data):
+    #     instance.name = validated_data.get('name', instance.name)
+    #     instance.description = validated_data.get('description', instance.description)
+    #     instance.active= validated_data.get('active', instance.active)
+    #     instance.save()
+    #     return instance
+    
     
     def validate(self, data):
         if data['name'] == data['description']:
             raise serializers.ValidationError("Description and name cannot be the same") 
+            
                
         #name validation
         if len(data['name']) < 2:
             raise serializers.ValidationError("Name is too short")
         
-        if Movie.objects.filter(name=data['name']).exists():
+        if WatchList.objects.filter(name=data['name']).exists():
             raise serializers.ValidationError("Name already exists")
         
         #description validation
         if len(data['description']) < 10:
             raise serializers.ValidationError("Description is too short")
         
-        if Movie.objects.filter(description=data['description']).exists():
+        if WatchList.objects.filter(description=data['description']).exists():
             raise serializers.ValidationError("Description already exists")
         
         return data
