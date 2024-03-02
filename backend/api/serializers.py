@@ -9,15 +9,15 @@ class StreamPlatfromSerializer(serializers.ModelSerializer):
 
 class WatchListSerializer(serializers.ModelSerializer):
     
-    name_length = serializers.SerializerMethodField()
+    title_length = serializers.SerializerMethodField()
     
     class Meta:
         model = WatchList
-        fields = ('__all__')
-        # exclude=['name']
+        fields = '__all__'
     
-    def get_name_length(self, obj):
-        return len(obj.name)    
+    def get_title_length(self, obj):
+        return len(obj.title)    
+    
     # def create(self, validated_data):
     #     return WatchList.objects.create(**validated_data)
 
@@ -28,25 +28,26 @@ class WatchListSerializer(serializers.ModelSerializer):
     #     instance.save()
     #     return instance
     
-    
     def validate(self, data):
-        if data['name'] == data['description']:
-            raise serializers.ValidationError("Description and name cannot be the same") 
-            
+        if data['title'] == data['storyline']:
+            raise serializers.ValidationError("Storyline and Title cannot be the same")    
                
         #name validation
-        if len(data['name']) < 2:
+        if len(data['title']) < 2:
             raise serializers.ValidationError("Name is too short")
         
-        if WatchList.objects.filter(name=data['name']).exists():
+        if WatchList.objects.filter(title=data['title']).exists():
             raise serializers.ValidationError("Name already exists")
         
         #description validation
-        if len(data['description']) < 10:
+        if len(data['storyline']) < 10:
             raise serializers.ValidationError("Description is too short")
         
-        if WatchList.objects.filter(description=data['description']).exists():
+        if WatchList.objects.filter(storyline=data['storyline']).exists():
             raise serializers.ValidationError("Description already exists")
         
         return data
         
+
+    
+     

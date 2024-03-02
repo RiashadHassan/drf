@@ -7,17 +7,18 @@ from .models import *
 from .serializers import WatchListSerializer, StreamPlatfromSerializer
 
 
-class WatchList(APIView):
+class WatchList_View(APIView):
     
     def get(self, request):
         try: 
-            WatchLists= WatchList.objects.all()
+            watchList_items= WatchList.objects.all()
         except:
-            context={'Error': 'No WatchLists were found'}
+            context={'Error': 'No WatchList was found'}
             return Response(context, status= status.HTTP_404_NOT_FOUND)
             
-        serializer = WatchListSerializer(WatchLists, many= True)
+        serializer = WatchListSerializer(watchList_items, many= True)
         return Response (serializer.data)
+    
     
     def post(self, request):
         serializer = WatchListSerializer(data=request.data)
